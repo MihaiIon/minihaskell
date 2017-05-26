@@ -28,4 +28,8 @@ lookupType (_ : xs) sym = lookupType xs sym
 typeCheck :: Tenv -> Exp -> Either Error Type
 typeCheck _ (EInt x) = Right TInt
 typeCheck env (EVar sym) = lookupType env sym
+--added
+--typeCheck env (EApp (EVar op) (EInt x)) | op elem ["+","-","*"] = Right $ TArrow (typeCheck env op) TInt
+--typeCheck env (EApp e1 e2) = Right $ TArrow (typeCheck env e1) (typeCheck env e2)
+--
 typeCheck _ _ = error "Oups ..."

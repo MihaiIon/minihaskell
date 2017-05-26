@@ -22,4 +22,8 @@ lookupVar (_ : xs) sym = lookupVar xs sym
 eval :: Env -> Exp -> Value
 eval _ (EInt x) = VInt x
 eval env (EVar sym) = lookupVar env sym
+--added
+eval env (Elan sym t exp) = VLam sym exp env
+eval env (EApp e1 e2) = (eval env e1) (eval env e2) 
+--
 eval _ _ = error "Oups ..."
