@@ -7,11 +7,13 @@ import Parseur
 -- Le datatype des types
 ---------------------------------------------------------------------------
 data Type = TInt
+          | TBool -- we want a error on : typeCheck tenv0 (ELam "op" TInt (EApp (EApp (EVar "+") (EInt 1)) (EBool True)))
           | TArrow Type Type
           deriving (Eq)
 
 instance Show Type where
   show TInt = "Int"
+  show TBool = "Bool"
   show (TArrow t1 t2) = showParen' t1 ++ " -> " ++ show t2
     where showParen' x@(TArrow _ _) = "(" ++ show x ++ ")"
           showParen' x = show x
@@ -20,17 +22,20 @@ instance Show Type where
 -- Le datatype des expressions et valeurs
 ---------------------------------------------------------------------------
 data Exp = EInt Int
+         | EBool Bool
          | EVar Symbol
          | EApp Exp Exp
          | ELam Symbol Type Exp
          deriving (Eq,Show)
 
 data Value = VInt Int
+           | VBool Bool
            | VLam Symbol Exp Env
            | VPrim (Value -> Value)
 
 instance Show Value where
   show (VInt n) = show n
+  show (VBool b)= show b
   show _ = "<function>"
 
 instance Eq Value where
