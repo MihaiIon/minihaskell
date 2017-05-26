@@ -23,7 +23,7 @@ data Exp = EInt Int
          | EVar Symbol
          | EApp Exp Exp
          | ELam Symbol Type Exp
-         deriving (Eq)
+         deriving (Eq,Show)
 
 data Value = VInt Int
            | VLam Symbol Exp Env
