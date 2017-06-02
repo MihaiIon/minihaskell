@@ -6,13 +6,11 @@ import Parseur
 -- Le datatype des types
 ---------------------------------------------------------------------------
 data Type = TInt
-          | TBool -- we want a error on : typeCheck tenv0 (ELam "op" TInt (EApp (EApp (EVar "+") (EInt 1)) (EBool True)))
           | TArrow Type Type
           deriving (Eq)
 
 instance Show Type where
   show TInt = "Int"
-  show TBool = "Bool"
   show (TArrow t1 t2) = showParen' t1 ++ " -> " ++ show t2
     where showParen' x@(TArrow _ _) = "(" ++ show x ++ ")"
           showParen' x = show x

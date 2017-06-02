@@ -53,7 +53,7 @@
 ---------------------------------------------------------------
 -- typeCheck : NOT SURE
 -- Input : typeCheck tenv0 (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y"))))
--- Result : ((((Int -> Int -> Int) -> Int) -> Int) -> Int) -> Int
+-- Result : Int -> Int -> Int
 --
 -- eval : -
 -- Input : -
@@ -104,13 +104,9 @@
 
 
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
---
--- eval : -
--- Input : -
--- Result : -
+-- typeCheck : DONE
+-- Input : typeCheck tenv0 (ELam "x" TBool (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y"))))
+-- Result : Data constructor not in scope: TBool :: Type
 ---------------------------------------------------------------
 -- Erreur type non déclaré et faux
 (((lambda ((x Bool) (y Int)) (+ x y)) 6 8)

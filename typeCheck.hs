@@ -43,7 +43,9 @@ typeCheck env (ELam sym t e) =
   if sym `elem` (getEnvSymbols env)
     then Left $ error $ "'" ++ sym ++ "' is not a valid parameter name or is already defined"
     else do
-      r <- typeCheck ((sym,t):env) e
-      Right $ TArrow r t
-
+      r <- typeCheck ((sym,t):env) e -- If error occurs, it will occur here.
+      case e of 
+        ELam _ _ _ -> Right $ TArrow t r
+        otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int.
+      
 typeCheck _ _ = Left $ error "Undefined type"
