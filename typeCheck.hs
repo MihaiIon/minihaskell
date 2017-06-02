@@ -3,11 +3,11 @@
 -- Vous avez à modifier / compléter les fonctions de ce fichier
 ---------------------------------------------------------------------------
 
-module Eval where
+module TypeCheck where
 
 import Parseur
-import EvalTypes
-import EvalFunctions
+import Types
+import Eval
 
 
 ---------------------------------------------------------------------------
@@ -41,9 +41,9 @@ typeCheck env (EApp e1 e2) = do
 
 typeCheck env (ELam sym t e) = 
   if sym `elem` (getEnvSymbols env)
-    then Left $ error $ "'" ++ sym ++ "' is not a valid parameter name"
+    then Left $ error $ "'" ++ sym ++ "' is not a valid parameter name or is already defined"
     else do
       r <- typeCheck ((sym,t):env) e
-      Right $ TArrow t r
+      Right $ TArrow r t
 
 typeCheck _ _ = Left $ error "Undefined type"

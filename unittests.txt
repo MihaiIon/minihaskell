@@ -1,81 +1,258 @@
+---------------------------------------------------------------
+-- typeCheck : DONE
+-- Input : typeCheck tenv0 (EApp (EApp (EVar "+") (EInt 1)) (EInt 2))
+-- Result : Right ((Int -> Int -> Int) -> Int) -> Int
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 (((+ 1) 2)
  3)
 
+
+---------------------------------------------------------------
+-- typeCheck : DONE
+-- Input : typeCheck tenv0 (EApp (EApp (EVar "*") (EInt 1)) (EInt 2))
+-- Result : Right ((Int -> Int -> Int) -> Int) -> Int
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 (((* 1) 2)
  2)
 
+
+---------------------------------------------------------------
+-- typeCheck : DONE
+-- Input : typeCheck tenv0 (EApp (EApp (EVar "-") (EInt 1)) (EInt 2))
+-- Result : Right ((Int -> Int -> Int) -> Int) -> Int
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 (((- 1) 2)
  -1)
 
+
+---------------------------------------------------------------
+-- typeCheck : DONE
+-- Input : typeCheck tenv0 (ELam "x" TInt (EInt 4))
+-- Result : Right Int -> Int
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 (((lambda ((x Int)) x) 4)
   4)
 
+
+---------------------------------------------------------------
+-- typeCheck : NOT SURE
+-- Input : typeCheck tenv0 (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y"))))
+-- Result : ((((Int -> Int -> Int) -> Int) -> Int) -> Int) -> Int
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 ((((lambda ((x Int))
       (lambda ((y Int)) ((+ x) y)))
     6) 8)
   14)
 
+
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- Paramètre manquant
 ((lambda () 5)
  Erreur) 
 
+
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- Sucre syntaxique
 (((lambda ((x Int) (y Int)) (+ x y)) 6 8)
  14)
 
+
+---------------------------------------------------------------
+-- typeCheck : DONE
+-- Input : typeCheck tenv0 (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y"))))
+-- Result : "*** Exception: 'x' is not a valid parameter name or is already defined"
+---------------------------------------------------------------
 -- Deux paramètres du même nom
 (((lambda ((x Int) (x Int)) (+ x y)) 6 8)
  Erreur)
 
+
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- Erreur type non déclaré et faux
 (((lambda ((x Bool) (y Int)) (+ x y)) 6 8)
  Erreur)
 
+
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- Let
 ((let ((x Int 5)) (+ x x))
  10)
 
+
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 ((let ((x Int 5)
        (y Int 8))
      (+ x y))
  13)
 
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- Ne doit pas produire pas de boucle infinie
 ((let ((x Int y)
        (y Int x))
      (+ 2 4))
  6)
  
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 ((let ((x Int 5)
        (y Int x))
      (+ x y))
  10)
 
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 ((let ((x Int y)
        (y Int 7))
      (+ x y))
  14)
 
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 ((let ((x (Int -> Int) (lambda ((x Int)) (+ x x)))
        (y Int 3))
      (x y))
  6)
 
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- data
 ((data ((Bool True False))
    (let ((x Bool True)) x))
  (data ((Bool True False)) True)) 
 
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- Int ne peut pas être redéfini
 ((data ((Int A B)) A)
  Erreur)
 
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 -- Data doit être une déclaration top level
 ((data ((Bool True False))
    (let ((x Bool True))
      (data ((Wrong A B)) 5)))
   Erreur)
 
+---------------------------------------------------------------
+-- typeCheck : -
+-- Input : -
+-- Result : -
+--
+-- eval : -
+-- Input : -
+-- Result : -
+---------------------------------------------------------------
 ((data ((Bool True False)
         (ListInt Nil (Cons Int ListInt)))
    (let ((x Bool True)

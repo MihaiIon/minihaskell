@@ -1,7 +1,6 @@
-module EvalTypes where
+module Types where
 
 import Parseur
-
 
 ---------------------------------------------------------------------------
 -- Le datatype des types

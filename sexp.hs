@@ -1,7 +1,7 @@
-module EvalSex where
+module Sexp where
 
 import Parseur
-import EvalTypes
+import Types
 
 ---------------------------------------------------------------------------
 -- Fonction de converstion des Sexp en Expressions (Exp)

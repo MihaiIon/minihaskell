@@ -14,9 +14,9 @@ import Text.ParserCombinators.Parsec
 import Control.Arrow
 
 import Parseur
-import EvalTypes
-import EvalSex
-import EvalFunctions
+import Types
+import Sexp
+import TypeCheck
 import Eval
 
 

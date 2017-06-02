@@ -3,11 +3,11 @@
 -- Vous avez à modifier / compléter les fonctions de ce fichier
 ---------------------------------------------------------------------------
 
-module EvalFunctions where
+module Eval where
 
 import Parseur
-import EvalTypes
-import EvalSex
+import Types
+import Sexp
 
 ---------------------------------------------------------------------------
 -- Fonction d'évaluation
