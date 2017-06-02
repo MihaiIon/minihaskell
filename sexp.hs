@@ -34,15 +34,33 @@ sexp2Exp (SList ((SSym "lambda") :
   t' <- sexp2type t
   return $ ELam var t' body'
 
+-- If there are multiple arguments, split the arguments and
+-- create sub lambda expressions with each one argument.
+sexp2Exp (SList ((SSym "lambda") : (SList (x:xs)) : body : [])) =
+  let body' = SList ((SSym "lambda") :
+                      (SList xs) :
+                      body : [])
+  in do 
+    r <- sexp2Exp (SList ((SSym "lambda") : 
+                          (SList (x:[])) :
+                          body' : []))
+    return r
 
 sexp2Exp (SList ((SSym "lambda") :
                  (SList []) :
                  _ :
                  [])) = Left "Syntax Error : No parameter"
       
+-- 
 sexp2Exp (SList (func : arg : [])) = do
   func' <- sexp2Exp func
   arg' <- sexp2Exp arg
   return $ EApp func' arg'
+
+-- If there are multiple arguments
+sexp2Exp (SList (func : x : xs)) = do
+  r1 <- sexp2Exp (SList (func:xs))
+  r2 <- sexp2Exp x
+  return $ EApp r1 r2
   
 sexp2Exp _ = Left "Syntax Error : Ill formed Sexp"

@@ -3,9 +3,9 @@
 -- Input : typeCheck tenv0 (EApp (EApp (EVar "+") (EInt 1)) (EInt 2))
 -- Result : Right ((Int -> Int -> Int) -> Int) -> Int
 --
--- eval : -
--- Input : -
--- Result : -
+-- eval : DONE
+-- Input : eval env0 (EApp (EApp (EVar "+") (EInt 1)) (EInt 2))
+-- Result : 3
 ---------------------------------------------------------------
 (((+ 1) 2)
  3)
@@ -16,9 +16,9 @@
 -- Input : typeCheck tenv0 (EApp (EApp (EVar "*") (EInt 1)) (EInt 2))
 -- Result : Right ((Int -> Int -> Int) -> Int) -> Int
 --
--- eval : -
--- Input : -
--- Result : -
+-- eval : DONE
+-- Input : eval env0 (EApp (EApp (EVar "*") (EInt 1)) (EInt 2))
+-- Result : 2
 ---------------------------------------------------------------
 (((* 1) 2)
  2)
@@ -29,9 +29,9 @@
 -- Input : typeCheck tenv0 (EApp (EApp (EVar "-") (EInt 1)) (EInt 2))
 -- Result : Right ((Int -> Int -> Int) -> Int) -> Int
 --
--- eval : -
--- Input : -
--- Result : -
+-- eval : DONE
+-- Input : eval env0 (EApp (EApp (EVar "-") (EInt 1)) (EInt 2))
+-- Result : -1
 ---------------------------------------------------------------
 (((- 1) 2)
  -1)
@@ -39,25 +39,25 @@
 
 ---------------------------------------------------------------
 -- typeCheck : DONE
--- Input : typeCheck tenv0 (ELam "x" TInt (EInt 4))
--- Result : Right Int -> Int
+-- Input : typeCheck tenv0 (EApp (ELam "x" TInt (EVar "x")) (EInt 4))
+-- Result : (Int -> Int) -> Int
 --
--- eval : -
--- Input : -
--- Result : -
+-- eval : DONE
+-- Input : eval env0 (EApp (ELam "x" TInt (EVar "x")) (EInt 4))
+-- Result : 4
 ---------------------------------------------------------------
 (((lambda ((x Int)) x) 4)
   4)
 
 
 ---------------------------------------------------------------
--- typeCheck : NOT SURE
--- Input : typeCheck tenv0 (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y"))))
--- Result : Int -> Int -> Int
+-- typeCheck : UNSURE
+-- Input : typeCheck tenv0 (EApp (EApp (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y")))) (EInt 6)) (EInt 8))
+-- Result : ((Int -> Int -> Int) -> Int) -> Int
 --
--- eval : -
--- Input : -
--- Result : -
+-- eval : DONE
+-- Input : eval env0 (EApp (EApp (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y")))) (EInt 6)) (EInt 8))
+-- Result : 14
 ---------------------------------------------------------------
 ((((lambda ((x Int))
       (lambda ((y Int)) ((+ x) y)))
@@ -65,14 +65,11 @@
   14)
 
 
+
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
---
--- eval : -
--- Input : -
--- Result : -
+-- minihaskell : DONE
+-- Input : (lambda () 5)
+-- Result : ERROR
 ---------------------------------------------------------------
 -- Paramètre manquant
 ((lambda () 5)
@@ -80,13 +77,9 @@
 
 
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
---
--- eval : -
--- Input : -
--- Result : -
+-- minihaskell : DONE
+-- Input : ((lambda ((x Int) (y Int)) (+ x y)) 6 8)
+-- Result : 14 :: ((Int -> Int -> Int) -> Int) -> Int
 ---------------------------------------------------------------
 -- Sucre syntaxique
 (((lambda ((x Int) (y Int)) (+ x y)) 6 8)

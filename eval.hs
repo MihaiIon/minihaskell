@@ -22,11 +22,11 @@ lookupVar (_ : xs) sym = lookupVar xs sym
 eval :: Env -> Exp -> Value
 eval _ (EInt x) = VInt x
 eval env (EVar sym) = lookupVar env sym
+eval env (EApp e1 e2) = 
+  let r = eval env e1 -- VLam or VPrim
+      v = eval env e2 -- VInt
+  in case r of
+    VPrim f -> f v
+    VLam sym e env -> eval ((sym,v):env) e
 
-eval env (ELam sym t e) = (VLam sym e env)
---eval env (EApp e1 e2) = do
---  r1 <- eval e1
---  r2 <- eval e2
---  return VPrim \
-eval _ _ = error "eval Oups ..."
-
+eval env (ELam sym _ e) = (VLam sym e env)

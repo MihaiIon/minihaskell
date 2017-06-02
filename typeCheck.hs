@@ -47,5 +47,3 @@ typeCheck env (ELam sym t e) =
       case e of 
         ELam _ _ _ -> Right $ TArrow t r
         otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int.
-      
-typeCheck _ _ = Left $ error "Undefined type"
