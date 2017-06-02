@@ -32,17 +32,18 @@ lookupType (_ : xs) sym = lookupType xs sym
 
 typeCheck :: Tenv -> Exp -> Either Error Type
 typeCheck _ (EInt _) = Right TInt
-typeCheck _ (EBool _)= Right TBool
 typeCheck env (EVar sym) = lookupType env sym
 
 typeCheck env (EApp e1 e2) = do
   r1 <- typeCheck env e1
   r2 <- typeCheck env e2
   Right $ TArrow r1 r2
+
 typeCheck env (ELam sym t e) = 
   if sym `elem` (getEnvSymbols env)
     then Left $ error $ "'" ++ sym ++ "' is not a valid parameter name"
     else do
-      r <- typeCheck env e
+      r <- typeCheck ((sym,t):env) e
       Right $ TArrow t r
 
+typeCheck _ _ = Left $ error "Undefined type"

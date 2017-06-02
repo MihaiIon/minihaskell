@@ -21,7 +21,6 @@ lookupVar (_ : xs) sym = lookupVar xs sym
 
 eval :: Env -> Exp -> Value
 eval _ (EInt x) = VInt x
-eval _ (EBool b)= VBool b -- we want a error on : EBool 5
 eval env (EVar sym) = lookupVar env sym
 
 eval env (ELam sym t e) = (VLam sym e env)
