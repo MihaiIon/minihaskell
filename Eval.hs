@@ -34,6 +34,7 @@ typeCheck :: Tenv -> Exp -> Either Error Type
 typeCheck _ (EInt _) = Right TInt
 typeCheck _ (EBool _)= Right TBool
 typeCheck env (EVar sym) = lookupType env sym
+
 typeCheck env (EApp e1 e2) = do
   r1 <- typeCheck env e1
   r2 <- typeCheck env e2
@@ -44,3 +45,4 @@ typeCheck env (ELam sym t e) =
     else do
       r <- typeCheck env e
       Right $ TArrow t r
+

@@ -23,9 +23,11 @@ eval :: Env -> Exp -> Value
 eval _ (EInt x) = VInt x
 eval _ (EBool b)= VBool b -- we want a error on : EBool 5
 eval env (EVar sym) = lookupVar env sym
+
 eval env (ELam sym t e) = (VLam sym e env)
 --eval env (EApp e1 e2) = do
 --  r1 <- eval e1
 --  r2 <- eval e2
 --  return VPrim \
 eval _ _ = error "eval Oups ..."
+
