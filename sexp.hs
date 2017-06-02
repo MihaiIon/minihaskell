@@ -25,6 +25,34 @@ sexp2Exp (SSym ident) | ident `elem` reservedKeywords
 sexp2Exp (SSym ident) = Right $ EVar ident
 
 
+-- LET
+sexp2Exp (SList ((SSym "let") : 
+                 (SList ((SList ((SSym var ) :t : v : [])) :[] )):
+                 body :
+                 [])) = do
+  body' <- sexp2Exp body
+  t' <- sexp2type t
+  v' <- sexp2Exp v
+  return $ ELet var t' body'
+  
+
+sexp2Exp (SList ((SSym "let") : (SList(x:xs)) : body : [])) =
+  let body' = SList ((SSym "let") :
+                     (SList xs) :
+                     body :[])
+  in do 
+    r <- sexp2Exp (SList ((SSym "let") : 
+                          (SList (x:[])) : 
+                          body' : []))
+    return r
+
+
+sexp2Exp (SList ((SSym "let") :
+                 (SList []) :
+                 _ :
+                 [])) = Left "Syntax Error : No parameter"
+--------------------------------------------
+--LAMBDA
 
 sexp2Exp (SList ((SSym "lambda") :
                  (SList ((SList ((SSym var) : t : [])) : [])) :
@@ -50,7 +78,7 @@ sexp2Exp (SList ((SSym "lambda") :
                  (SList []) :
                  _ :
                  [])) = Left "Syntax Error : No parameter"
-      
+----------------------------------------------------
 -- 
 sexp2Exp (SList (func : arg : [])) = do
   func' <- sexp2Exp func
