@@ -49,16 +49,17 @@ sexp2Exp (SList ((SSym "lambda") :
                  _ :
                  [])) = Left "Syntax Error : No parameter"
       
--- 
+-- Default case : One argument.
 sexp2Exp (SList (func : arg : [])) = do
   func' <- sexp2Exp func
   arg' <- sexp2Exp arg
   return $ EApp func' arg'
 
--- If there are multiple arguments
+-- If there are multiple arguments, create a growing left-side ASA.
+-- The arguments are always on the right.
 sexp2Exp (SList (func : x : xs)) = do
-  r1 <- sexp2Exp (SList (func:xs))
-  r2 <- sexp2Exp x
+  r1 <- sexp2Exp (SList (func:xs))  -- recursion
+  r2 <- sexp2Exp x                  -- arg
   return $ EApp r1 r2
   
 sexp2Exp _ = Left "Syntax Error : Ill formed Sexp"
