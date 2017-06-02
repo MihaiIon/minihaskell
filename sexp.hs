@@ -23,6 +23,9 @@ sexp2Exp (SNum x) = Right $ EInt x
 sexp2Exp (SSym ident) | ident `elem` reservedKeywords
   = Left $ ident ++ " is a reserved keyword"
 sexp2Exp (SSym ident) = Right $ EVar ident
+
+
+
 sexp2Exp (SList ((SSym "lambda") :
                  (SList ((SList ((SSym var) : t : [])) : [])) :
                  body :
@@ -30,6 +33,8 @@ sexp2Exp (SList ((SSym "lambda") :
   body' <- sexp2Exp body
   t' <- sexp2type t
   return $ ELam var t' body'
+
+
 sexp2Exp (SList ((SSym "lambda") :
                  (SList []) :
                  _ :
