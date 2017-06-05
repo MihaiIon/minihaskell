@@ -22,11 +22,13 @@ data Exp = EInt Int
          | EVar Symbol
          | EApp Exp Exp
          | ELam Symbol Type Exp
+         | ELet Symbol Type Exp Exp
          deriving (Eq,Show)
 
 data Value = VInt Int
            | VLam Symbol Exp Env
            | VPrim (Value -> Value)
+           | VLet Symbol Exp Env
 
 instance Show Value where
   show (VInt n) = show n

@@ -23,6 +23,23 @@ sexp2Exp (SNum x) = Right $ EInt x
 sexp2Exp (SSym ident) | ident `elem` reservedKeywords
   = Left $ ident ++ " is a reserved keyword"
 sexp2Exp (SSym ident) = Right $ EVar ident
+
+
+
+-- LET
+--------------------------------------------
+sexp2Exp (SList ((SSym "let") : 
+                 (SList ((SList ((SSym var ) : t : v : [])) : [])) :
+                 body :
+                 [])) = do
+  body' <- sexp2Exp body
+  t' <- sexp2type t
+  v' <- sexp2Exp v
+  return $ ELet var t' v' body'
+
+
+-- LAMBDA
+--------------------------------------------
 sexp2Exp (SList ((SSym "lambda") :
                  (SList ((SList ((SSym var) : t : [])) : [])) :
                  body :
@@ -31,9 +48,12 @@ sexp2Exp (SList ((SSym "lambda") :
   t' <- sexp2type t
   return $ ELam var t' body'
 
+
+-- General
+--------------------------------------------
 -- If there are multiple arguments, split the arguments and
 -- create sub lambda expressions with each one argument.
-sexp2Exp (SList ((SSym "lambda") : (SList (x:xs)) : body : [])) =
+sexp2Exp (SList ((SSym s) : (SList (x:xs)) : body : [])) | s `elem` ["lambda", "let"] =
   let body' = SList ((SSym "lambda") :
                       (SList xs) :
                       body : [])
@@ -44,12 +64,12 @@ sexp2Exp (SList ((SSym "lambda") : (SList (x:xs)) : body : [])) =
     return r
 
 -- ERROR.
-sexp2Exp (SList ((SSym "lambda") :
-                 (SList []) :
-                 _ :
-                 [])) = Left "Syntax Error : No parameter"
-      
+sexp2Exp (SList ((SSym s) : (SList []) : _ : [])) | s `elem` ["lambda", "let"] = 
+  Left "Syntax Error : No parameter"
+
+
 -- Default case : One argument.
+----------------------------------------------------
 sexp2Exp (SList (func : arg : [])) = do
   func' <- sexp2Exp func
   arg' <- sexp2Exp arg
