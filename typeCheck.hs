@@ -20,10 +20,7 @@ tenv0 = [("+", TArrow TInt (TArrow TInt TInt)),
          ("-", TArrow TInt (TArrow TInt TInt)),
          ("*", TArrow TInt (TArrow TInt TInt))]
 
--- Fonction additionnelle pour récupérer les symboles réservés.
-getEnvSymbols :: [(Symbol, Type)] -> [Symbol]
-getEnvSymbols [] = []
-getEnvSymbols ((s,v):xs) = (s:(getEnvSymbols xs))
+
 
 isInTenv :: Symbol -> [(Symbol, Type)] -> Bool
 isInTenv sym [] = False
@@ -43,6 +40,8 @@ typeCheck env (EApp e1 e2) = do
   r2 <- typeCheck env e2
   Right $ TArrow r1 r2
 
+
+--TO DO ( REWORK)
 typeCheck env (ELam sym t e) = 
   if isInTenv sym env
     then Left $ error $ "'" ++ sym ++ "' is an invalid parameter name or is already defined"
@@ -52,11 +51,13 @@ typeCheck env (ELam sym t e) =
         ELam _ _ _ -> Right $ TArrow t r
         otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int.
 
+
+-- TO DO  ( REWORK )
 typeCheck env (ELet sym t v e) =
   if isInTenv sym env
     then Left $ error $ "'" ++ sym ++ "' is an invalid parameter name or is already defined"
     else do
       r <- typeCheck ((sym,t):env) e -- If an error occurs, it will occur here.
       case e of 
-        ELet _ _ _ -> Right $ TArrow t r
+        ELet _ _ _ _-> Right $ TArrow t r
         otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int. 

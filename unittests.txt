@@ -111,9 +111,9 @@
 -- Input : -
 -- Result : -
 --
--- eval : -
--- Input : -
--- Result : -
+-- eval : 
+-- Input : 
+-- Result : 
 ---------------------------------------------------------------
 ((let ((x Int 5)) (+ x x))
  10)
@@ -252,3 +252,10 @@
       (if x)))
   (data ((Bool True False)) False))
 
+
+
+
+
+
+
+sexp2Exp (SList ((SSym "let") : (SList ((SList ((SSym "x") : (SSym "Int") : (SNum 5) : [])):(SList ((SSym "y") : (SSym "Int") : (SNum 5) : [])) : [])): (SSym "x") : []))
