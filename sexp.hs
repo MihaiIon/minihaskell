@@ -54,11 +54,11 @@ sexp2Exp (SList ((SSym "lambda") :
 -- If there are multiple arguments, split the arguments and
 -- create sub lambda expressions with each one argument.
 sexp2Exp (SList ((SSym s) : (SList (x:xs)) : body : [])) | s `elem` ["lambda", "let"] =
-  let body' = SList ((SSym "lambda") :
+  let body' = SList ((SSym s) :
                       (SList xs) :
                       body : [])
   in do 
-    r <- sexp2Exp (SList ((SSym "lambda") : 
+    r <- sexp2Exp (SList ((SSym s) : 
                           (SList (x:[])) :
                           body' : []))
     return r
