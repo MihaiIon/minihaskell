@@ -65,21 +65,10 @@ typeCheck env (ELam sym t body) = do
     TArrow a b -> return $ TArrow a (TArrow t r)
     t' -> return $ TArrow t' (TArrow t t') 
 
-
-{-typeCheck env (ELam sym t e) = 
-  if isInTenv sym env
-    then Left $ error $ "'" ++ sym ++ "' is an invalid parameter name or is already defined"
-    else do
-      r <- typeCheck ((sym,t):env) e -- If an error occurs, it will occur here.
-      case e of 
-        ELam _ _ _ -> Right $ TArrow t r
-        otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int.-}
-
-
 -- TO DO  ( REWORK )
 typeCheck env (ELet sym t v e) = do
   env' <- addToTenv (sym, t) env
-  r <- typeCheck ((sym,t):env) e -- If an error occurs, it will occur here.
+  r <- typeCheck env' e -- If an error occurs, it will occur here.
   case e of 
     ELet _ _ _ _-> Right $ TArrow t r
     otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int. 
