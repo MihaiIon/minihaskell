@@ -20,8 +20,6 @@ tenv0 = [("+", TArrow TInt (TArrow TInt TInt)),
          ("-", TArrow TInt (TArrow TInt TInt)),
          ("*", TArrow TInt (TArrow TInt TInt))]
 
-
-
 isInTenv :: Symbol -> [(Symbol, Type)] -> Bool
 isInTenv sym [] = False
 isInTenv sym ((s,_):xs) = if sym == s then True else False
@@ -38,7 +36,9 @@ typeCheck env (EVar sym) = lookupType env sym
 typeCheck env (EApp e1 e2) = do
   r1 <- typeCheck env e1
   r2 <- typeCheck env e2
-  Right $ TArrow r1 r2
+  case t1 of 
+    TArrow a b -> if a == t2 then return b else return $ error "Error in EApp :: TypeCheck"
+    _ -> return error "Error in EApp :: TypeCheck"
 
 
 --TO DO ( REWORK)
