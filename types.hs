@@ -18,11 +18,14 @@ instance Show Type where
 ---------------------------------------------------------------------------
 -- Le datatype des expressions et valeurs
 ---------------------------------------------------------------------------
+
+type LetEnv = [(Exp, Type, Exp)]
+
 data Exp = EInt Int
          | EVar Symbol
          | EApp Exp Exp
          | ELam Symbol Type Exp
-         | ELet Symbol Type Exp Exp -- Let - (Var - Type - ValueVar) - Body
+         | ELet LetEnv Exp -- Let - [(Var - Type - ValueVar)] - Body
          deriving (Eq,Show)
 
 data Value = VInt Int

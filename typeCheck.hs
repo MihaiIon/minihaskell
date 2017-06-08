@@ -25,12 +25,12 @@ tenv0 = [("+", TArrow TInt (TArrow TInt TInt)),
 
 isInTenv :: Symbol -> Tenv -> Bool
 isInTenv sym [] = False
-isInTenv sym ((s,_):xs) = if sym == s then True else False
+isInTenv sym ((s,_):xs) = if sym == s then True else (isInTenv sym xs)
 
 addToTenv :: (Symbol, Type) -> Tenv -> Either Error Tenv
 addToTenv (sym, t) env = 
   if (isInTenv sym env)
-    then Left $ error $ "'" ++ sym ++ "' is an invalid parameter name or is already defined"
+    then Left $ error $ "addToTenv :: '" ++ sym ++ "' is an invalid parameter name or is already defined"
     else Right ((sym, t):env)
 
 ------------------------
@@ -66,9 +66,9 @@ typeCheck env (ELam sym t body) = do
     t' -> return $ TArrow t' (TArrow t t') 
 
 -- TO DO  ( REWORK )
-typeCheck env (ELet sym t v e) = do
+{-typeCheck env (ELet sym t v e) = do
   env' <- addToTenv (sym, t) env
   r <- typeCheck env' e -- If an error occurs, it will occur here.
   case e of 
     ELet _ _ _ _-> Right $ TArrow t r
-    otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int. 
+    otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int. -}

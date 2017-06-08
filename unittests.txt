@@ -122,7 +122,11 @@
 ((let ((x Int 5)) (+ x x))
  10)
 
- --(SList ((SSym "let") : (SList ((SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : [])) :  (SSym "x") : []))
+--(SList ((SSym "let") : (SList ((SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : [])) :  (SSym "x") : []))
+
+--(SList ((SSym "let") : (SList ((SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : [])) :  (SSym "x") : []))
+
+--(SList ((SSym "let") : (SList ((SList ((SSym "y") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : [])) :  (SSym "x") : []))
 
 
 ---------------------------------------------------------------
