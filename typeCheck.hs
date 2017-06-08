@@ -9,7 +9,6 @@ import Parseur
 import Types
 import Eval
 
-
 ---------------------------------------------------------------------------
 -- Fonction pour la vérification de type
 -- Vous allez devoir modifier typeCheck
@@ -36,20 +35,32 @@ typeCheck env (EVar sym) = lookupType env sym
 typeCheck env (EApp e1 e2) = do
   r1 <- typeCheck env e1
   r2 <- typeCheck env e2
-  case t1 of 
-    TArrow a b -> if a == t2 then return b else return $ error "Error in EApp :: TypeCheck"
-    _ -> return error "Error in EApp :: TypeCheck"
+  case r1 of 
+    TArrow (TArrow a z) r -> 
+      if z == r2 
+        then return (TArrow a r) 
+        else return $ error "TypeCheck :: Error in EApp, 1st case."
+    TArrow a b -> 
+      if a == r2 
+        then return b 
+        else return $ error $ "TypeCheck :: Error in EApp, 2nd case." 
+    t -> return t
+
+typeCheck env (ELam sym t body) = do
+  r <- typeCheck ((sym,t):env) body
+  case r of
+    TArrow a b -> return $ TArrow a (TArrow t r)
+    t' -> return $ TArrow t' (TArrow t t') 
 
 
---TO DO ( REWORK)
-typeCheck env (ELam sym t e) = 
+{-typeCheck env (ELam sym t e) = 
   if isInTenv sym env
     then Left $ error $ "'" ++ sym ++ "' is an invalid parameter name or is already defined"
     else do
       r <- typeCheck ((sym,t):env) e -- If an error occurs, it will occur here.
       case e of 
         ELam _ _ _ -> Right $ TArrow t r
-        otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int.
+        otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int.-}
 
 
 -- TO DO  ( REWORK )

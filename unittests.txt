@@ -1,7 +1,7 @@
 ---------------------------------------------------------------
 -- typeCheck : DONE
 -- Input : typeCheck tenv0 (EApp (EApp (EVar "+") (EInt 1)) (EInt 2))
--- Result : Right ((Int -> Int -> Int) -> Int) -> Int
+-- Result : Right Int
 --
 -- eval : DONE
 -- Input : eval env0 (EApp (EApp (EVar "+") (EInt 1)) (EInt 2))
@@ -14,7 +14,7 @@
 ---------------------------------------------------------------
 -- typeCheck : DONE
 -- Input : typeCheck tenv0 (EApp (EApp (EVar "*") (EInt 1)) (EInt 2))
--- Result : Right ((Int -> Int -> Int) -> Int) -> Int
+-- Result : Right Int
 --
 -- eval : DONE
 -- Input : eval env0 (EApp (EApp (EVar "*") (EInt 1)) (EInt 2))
@@ -27,7 +27,7 @@
 ---------------------------------------------------------------
 -- typeCheck : DONE
 -- Input : typeCheck tenv0 (EApp (EApp (EVar "-") (EInt 1)) (EInt 2))
--- Result : Right ((Int -> Int -> Int) -> Int) -> Int
+-- Result : Right Int
 --
 -- eval : DONE
 -- Input : eval env0 (EApp (EApp (EVar "-") (EInt 1)) (EInt 2))
@@ -40,7 +40,7 @@
 ---------------------------------------------------------------
 -- typeCheck : DONE
 -- Input : typeCheck tenv0 (EApp (ELam "x" TInt (EVar "x")) (EInt 4))
--- Result : (Int -> Int) -> Int
+-- Result : Int -> Int
 --
 -- eval : DONE
 -- Input : eval env0 (EApp (ELam "x" TInt (EVar "x")) (EInt 4))
@@ -51,9 +51,9 @@
 
 
 ---------------------------------------------------------------
--- typeCheck : UNSURE
+-- typeCheck : DONE
 -- Input : typeCheck tenv0 (EApp (EApp (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y")))) (EInt 6)) (EInt 8))
--- Result : ((Int -> Int -> Int) -> Int) -> Int
+-- Result : Int -> Int -> Int
 --
 -- eval : DONE
 -- Input : eval env0 (EApp (EApp (ELam "x" TInt (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y")))) (EInt 6)) (EInt 8))
@@ -79,7 +79,7 @@
 ---------------------------------------------------------------
 -- minihaskell : DONE
 -- Input : ((lambda ((x Int) (y Int)) (+ x y)) 6 8)
--- Result : 14 :: ((Int -> Int -> Int) -> Int) -> Int
+-- Result : 14 :: Int -> Int -> Int
 ---------------------------------------------------------------
 -- Sucre syntaxique
 (((lambda ((x Int) (y Int)) (+ x y)) 6 8)
