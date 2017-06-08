@@ -69,7 +69,7 @@
 ---------------------------------------------------------------
 -- minihaskell : DONE
 -- Input : (lambda () 5)
--- Result : ERROR
+-- Result : "Syntax Error : No parameter"
 ---------------------------------------------------------------
 -- Paramètre manquant
 ((lambda () 5)
@@ -100,6 +100,10 @@
 -- typeCheck : DONE
 -- Input : typeCheck tenv0 (ELam "x" TBool (ELam "y" TInt (EApp (EApp (EVar "+") (EVar "x")) (EVar "y"))))
 -- Result : Data constructor not in scope: TBool :: Type
+--
+-- minihaskell : NOT IMPLEMENTED YET
+-- Input : ((lambda ((x Bool) (y Int)) (+ x y)) 6 8)
+-- Result : "Ill formed type"
 ---------------------------------------------------------------
 -- Erreur type non déclaré et faux
 (((lambda ((x Bool) (y Int)) (+ x y)) 6 8)
@@ -251,11 +255,3 @@
 	        (case x ((True False) (False True))))))
       (if x)))
   (data ((Bool True False)) False))
-
-
-
-
-
-
-
-sexp2Exp (SList ((SSym "let") : (SList ((SList ((SSym "x") : (SSym "Int") : (SNum 5) : [])):(SList ((SSym "y") : (SSym "Int") : (SNum 5) : [])) : [])): (SSym "x") : []))

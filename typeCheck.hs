@@ -19,9 +19,21 @@ tenv0 = [("+", TArrow TInt (TArrow TInt TInt)),
          ("-", TArrow TInt (TArrow TInt TInt)),
          ("*", TArrow TInt (TArrow TInt TInt))]
 
-isInTenv :: Symbol -> [(Symbol, Type)] -> Bool
+------------------------
+-- Helpers
+------------------------
+
+isInTenv :: Symbol -> Tenv -> Bool
 isInTenv sym [] = False
 isInTenv sym ((s,_):xs) = if sym == s then True else False
+
+addToTenv :: (Symbol, Type) -> Tenv -> Either Error Tenv
+addToTenv (sym, t) env = 
+  if (isInTenv sym env)
+    then Left $ error $ "'" ++ sym ++ "' is an invalid parameter name or is already defined"
+    else Right ((sym, t):env)
+
+------------------------
 
 lookupType :: [(Symbol, Type)] -> Symbol -> Either Error Type
 lookupType [] sym = Left $ "Not in scope variable : " ++ sym
@@ -47,7 +59,8 @@ typeCheck env (EApp e1 e2) = do
     t -> return t
 
 typeCheck env (ELam sym t body) = do
-  r <- typeCheck ((sym,t):env) body
+  env' <- addToTenv (sym, t) env
+  r <- typeCheck env' body
   case r of
     TArrow a b -> return $ TArrow a (TArrow t r)
     t' -> return $ TArrow t' (TArrow t t') 
@@ -64,11 +77,9 @@ typeCheck env (ELam sym t body) = do
 
 
 -- TO DO  ( REWORK )
-typeCheck env (ELet sym t v e) =
-  if isInTenv sym env
-    then Left $ error $ "'" ++ sym ++ "' is an invalid parameter name or is already defined"
-    else do
-      r <- typeCheck ((sym,t):env) e -- If an error occurs, it will occur here.
-      case e of 
-        ELet _ _ _ _-> Right $ TArrow t r
-        otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int. 
+typeCheck env (ELet sym t v e) = do
+  env' <- addToTenv (sym, t) env
+  r <- typeCheck ((sym,t):env) e -- If an error occurs, it will occur here.
+  case e of 
+    ELet _ _ _ _-> Right $ TArrow t r
+    otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int. 
