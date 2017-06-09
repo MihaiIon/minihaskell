@@ -112,28 +112,21 @@
 
 ---------------------------------------------------------------
 -- typeCheck : SUCCESS
--- eval : 
+-- eval : SUCCESS
 -- 
--- minihaskell
--- result : 
+-- minihaskell : DONE
+-- result : 10 :: Int
 ---------------------------------------------------------------
 ((let ((x Int 5)) (+ x x))
  10)
 
---(SList ((SSym "let") : (SList ((SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : [])) :  (SSym "x") : []))
-
---(SList ((SSym "let") : (SList ((SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : [])) :  (SSym "x") : []))
-
---(SList ((SSym "let") : (SList ((SList ((SSym "y") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SNum 4) : [])) : [])) :  (SSym "x") : []))
-
-
 ---------------------------------------------------------------
 -- typeCheck : SUCCESS
--- eval : -
+-- eval :SUCCESS
 --
--- minihaskell
+-- minihaskell : DONE
 -- Input : (let ((x Int 5) (y Int 8)) (+ x y))
--- Result :
+-- Result : 13 :: Int
 ---------------------------------------------------------------
 ((let ((x Int 5)
        (y Int 8))
@@ -141,13 +134,12 @@
  13)
 
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
+-- typeCheck : SUCCESS
+-- eval : SUCCESS
 --
--- eval : -
--- Input : -
--- Result : -
+-- minihaskell : DONE
+-- Input : (let ((x Int y) (y Int x)) (+ 2 4))
+-- Result : 6 :: Int
 ---------------------------------------------------------------
 -- Ne doit pas produire pas de boucle infinie
 ((let ((x Int y)
@@ -156,13 +148,12 @@
  6)
  
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
+-- typeCheck : SUCCESS
+-- eval : SUCCESS
 --
--- eval : -
--- Input : -
--- Result : -
+-- minihaskell : DONE
+-- Input : (let ((x Int 5) (y Int x)) (+ x y))
+-- Result : 10 :: Int
 ---------------------------------------------------------------
 ((let ((x Int 5)
        (y Int x))
@@ -170,25 +161,22 @@
  10)
 
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
+-- typeCheck : SUCCESS
+-- eval : SUCCESS
 --
--- eval : -
--- Input : -
--- Result : -
+-- minihaskell : DONE
+-- Input : (let ((x Int y) (y Int 7)) (+ x y))
+-- Result : 14 :: Int
 ---------------------------------------------------------------
-((let ((x Int y)
-       (y Int 7))
-     (+ x y))
+((let ((x Int y) (y Int 7)) (+ x y))
  14)
 
 ---------------------------------------------------------------
 -- typeCheck : 
 -- eval : 
 --
--- minihaskell :
--- Input : (let ((x (Int -> Int) (lambda ((x Int)) (+ x x))) (y Int 3)) (x y))
+-- minihaskell : PARSER PROBLEM - TEACHER FIX
+-- Input : (let ((x (Int Int) (lambda ((x Int)) (+ x x))) (y Int 3)) (x y))
 -- Result : -
 ------------------------------------------------
 ((let ((x (Int -> Int) (lambda ((x Int)) (+ x x)))

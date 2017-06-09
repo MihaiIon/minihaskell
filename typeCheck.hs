@@ -67,7 +67,7 @@ typeCheck env (ELam sym t body) = do
 
 
 typeCheck env (ELet lenv body) = do
-  t <- typeCheck (env++(buildEnv [] lenv)) body
+  t <- typeCheck ((buildEnv [] lenv)++env) body
   return t
   where buildEnv :: Tenv -> LetEnv -> Tenv
         buildEnv env [] = env

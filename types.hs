@@ -7,6 +7,7 @@ import Parseur
 ---------------------------------------------------------------------------
 data Type = TInt
           | TArrow Type Type
+          | TData Symbol
           deriving (Eq)
 
 instance Show Type where
@@ -14,6 +15,7 @@ instance Show Type where
   show (TArrow t1 t2) = showParen' t1 ++ " -> " ++ show t2
     where showParen' x@(TArrow _ _) = "(" ++ show x ++ ")"
           showParen' x = show x
+  show (TData sym) = sym
 
 ---------------------------------------------------------------------------
 -- Le datatype des expressions et valeurs
@@ -31,6 +33,7 @@ data Exp = EInt Int
 data Value = VInt Int
            | VLam Symbol Exp Env
            | VPrim (Value -> Value)
+           | VData Type [Value] -- ex : Bool [True, False]
 
 instance Show Value where
   show (VInt n) = show n
