@@ -8,34 +8,32 @@ import Types
 ------------------------
 
 ---------------
-isSpecialKeyword :: Sexp -> Bool
-isSpecialKeyword (SSym s) = if s `elem` (["+","-","*"] ++ reservedKeywords) 
+isSpecialKeyword :: Symbol -> Bool
+isSpecialKeyword s = if s `elem` (["+","-","*"] ++ reservedKeywords) 
   then True else False
-isSpecialKeyword (SNum n) = True
-isSpecialKeyword _ = True
 
 ---------------
-isInLetEnv :: Sexp -> LetEnv -> Bool
+isInLetEnv :: Symbol -> LetEnv -> Bool
 isInLetEnv sym [] = -- Check for forbbiden variable names.
   if (isSpecialKeyword sym) then True else False
 
-isInLetEnv (SSym sym) (((EVar s),_,_):xs) = 
-  if sym == s then True else (isInLetEnv (SSym sym) xs)
+isInLetEnv sym ((s,_,_):xs) = 
+  if sym == s then True else (isInLetEnv sym xs)
 
 ---------------
 addToLetEnv :: (Sexp, Sexp, Sexp) -> LetEnv -> Either Error LetEnv
 addToLetEnv ((SSym sym), t, v) env = 
-  if (isInLetEnv (SSym sym) env)
+  if (isInLetEnv sym env)
     then Left $ error $ "addToLetEnv :: '" ++ sym ++ "' is an invalid parameter name or is already defined"
     else do
       t' <- sexp2type t
       v' <- parse v
-      return $ (((EVar sym), t', v'):env)
+      return $ ((sym, t', v'):env)
       where parse :: Sexp -> Either Error Exp
-            parse (SNum n) = Right $ EInt n
-            parse (SSym s) = if (isSpecialKeyword (SSym s)) 
+            parse (SSym s) = if (isSpecialKeyword s) 
               then Left $  error $ "addToLetEnv :: '" ++ s ++ "' is an invalid parameter name or is already defined."
               else Right $ EVar s
+            parse other = sexp2Exp other
 addToLetEnv _ _ = Left $ error "addToLetEnv :: 'arg' or 'env' are malformed."
 
 ------------------------
@@ -81,7 +79,7 @@ sexp2Exp (SList ((SSym "let") : args : body : [])) = do
 
 -- TRY THIS in 'MAIN>'
 -- sexp2Exp (SList ((SSym "let") : (SList ((SList ((SSym "y") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SSym "y") : [])) : [])) :  (SSym "x") : []))
-
+-- REP : Right (ELet ([("x",TInt,(EVar "y"),("y",TInt,(EInt 4)]) (EVar "x"))
 
 -- LAMBDA
 --------------------------------------------

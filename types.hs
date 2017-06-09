@@ -19,7 +19,7 @@ instance Show Type where
 -- Le datatype des expressions et valeurs
 ---------------------------------------------------------------------------
 
-type LetEnv = [(Exp, Type, Exp)]
+type LetEnv = [(Symbol, Type, Exp)]
 
 data Exp = EInt Int
          | EVar Symbol

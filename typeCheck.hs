@@ -65,6 +65,15 @@ typeCheck env (ELam sym t body) = do
     TArrow a b -> return $ TArrow a (TArrow t r)
     t' -> return $ TArrow t' (TArrow t t') 
 
+
+typeCheck env (ELet lenv body) = do
+  t <- typeCheck (env++(buildEnv [] lenv)) body
+  return t
+  where buildEnv :: Tenv -> LetEnv -> Tenv
+        buildEnv env [] = env
+        buildEnv env ((s,t,_):xs) = buildEnv ((s,t):env) xs
+
+
 -- TO DO  ( REWORK )
 {-typeCheck env (ELet sym t v e) = do
   env' <- addToTenv (sym, t) env

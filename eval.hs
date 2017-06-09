@@ -31,6 +31,7 @@ eval env (EApp e1 e2) =
 
 eval env (ELam sym _ e) = (VLam sym e env)
 
+eval env (ELet lenv body) = VInt 2
 --eval env (ELet sym t val e) = 
---  let r = eval env val
+-- let r = eval env val
 --  in eval ((sym,r):env) e
