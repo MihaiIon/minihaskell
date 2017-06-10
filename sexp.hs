@@ -69,23 +69,26 @@ sexp2Exp (SList ((SSym "data") : types : body : [])) = do
     otherwise -> do
       env <- buildEnv [] types
       body' <- sexp2Exp body
-      return $ EData env body'
+      return $ EData env body' 
       where buildEnv :: [Value] -> Sexp ->  Either Error [Value]
             buildEnv env (SList []) = Right env
-            buildEnv env (SList ((SList ((SSym name) : values)) : xs)) = do
+            buildEnv env (SList ((SList ((SSym sym) : values)) : xs)) = do
               case values of
                 [] -> return $ error "sexp2Exp :: 'data' type is missing possible values."
-                otherwise -> do
-                  list <- buildList [] values
-                  env' <- ((VData (TData name) list) : env)
-                  fenv <- buildEnv env' (SList xs)
-                  return fenv 
-                  where buildList :: [Value] -> [Sexp] -> Either Error [Value]
-                        buildList env [] = Right env
-                        buildList env ((SSym v):vs) = do
-                          env' <- ((VSym v):env)
-                          fenv <- buildList env' vs
-                          return fenv
+                otherwise ->
+                  if (isInEnv sym env)
+                    then return $ error $ "Type '" ++ sym ++ "' is already defined."
+                    else do 
+                      fenv <- buildEnv ((VData (TData sym) (buildList [] values)) : env) (SList xs)
+                      return fenv 
+                      where buildList :: [Value] -> [Sexp] -> [Value]
+                            buildList env [] = env
+                            buildList env ((SSym v):vs) = do
+                              fenv <- buildList ((VSym v):env) vs
+                              return fenv
+                      where isInEnv :: Symbol -> [Value] -> Bool
+                            isInEnv sym [] = if sym == "Int" then True else False
+                            isInEnv sym ((VData (TData s) _ ):xs) = if sym == s then True else (isInEnv sym xs)
             buildEnv _ _ = Left $ error "sexp2Exp :: 'data' arguments are malformed."
 
 -- LET
@@ -96,7 +99,9 @@ sexp2Exp (SList ((SSym "let") : args : body : [])) = do
     otherwise -> do
       env <- buildEnv [] args
       body' <- sexp2Exp body
-      return $ ELet env body'
+      if (isDataInBody body')
+        then return $ error "sexp2Exp :: 'data' must be declared at top level."
+        else return $ ELet env body'
       where buildEnv :: LetEnv -> Sexp -> Either Error LetEnv
             buildEnv env (SList []) = Right env
             buildEnv env (SList ((SList (sym : t : v : [])) : xs)) = do
@@ -104,6 +109,15 @@ sexp2Exp (SList ((SSym "let") : args : body : [])) = do
               fenv <- buildEnv env' (SList xs)
               return fenv
             buildEnv _ _ = Left $ error "sexp2Exp :: 'let' arguments are malformed."
+      where isDataInBody :: Exp -> Bool
+            isDataInBody (EData _ _) = True
+            isDataInBody (ELam _ _ body) = isDataInBody body
+            isDataInBody (ELet _ body) = isDataInBody body
+            isDataInBody (EApp e1 e2) = 
+              let r1 = isDataInBody e1
+                  r2 = isDataInBody e2
+              in if ((not r1) && (not r2)) then False else True 
+            isDataInBody _ = False
 
 -- TRY THIS in 'MAIN>'
 -- sexp2Exp (SList ((SSym "let") : (SList ((SList ((SSym "y") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SSym "y") : [])) : [])) :  (SSym "x") : []))

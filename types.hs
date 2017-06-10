@@ -44,7 +44,7 @@ instance Show Value where
     (show t) ++ " " ++ (show' vs)
     where show' :: [Value] -> String
           show' (x:[]) = show x
-          show' (x:xs) = (show x) ++ (show' xs)
+          show' (x:xs) = (show x) ++ " " ++ (show' xs)
   show _ = "<function>"
 
 instance Eq Value where

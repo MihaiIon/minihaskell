@@ -179,17 +179,16 @@
 -- Input : (let ((x (Int Int) (lambda ((x Int)) (+ x x))) (y Int 3)) (x y))
 -- Result : -
 ------------------------------------------------
-((let ((x (Int -> Int) (lambda ((x Int)) (+ x x)))
+((let ((x (Int Int) (lambda ((x Int)) (+ x x)))
        (y Int 3))
      (x y))
  6)
 
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
+-- typeCheck : SUCCESS
+-- eval : 
 --
--- eval : -
+-- minihaskell : 
 -- Input : (data ((Bool True False)) (let ((x Bool True)) x))
 -- Result : -
 ---------------------------------------------------------------
@@ -198,57 +197,42 @@
    (let ((x Bool True)) x))
  (data ((Bool True False)) True)) 
 
--- 
-(SList 
-  (
-    (SSym "data") : 
-    (SList 
-      (
 
-
-        (SList 
-          (
-            (SSym "Bool"):
-            (SSym "True")
-          :[])
-        ) 
-
-
-      :[])
-    )      
-    (SNum 2)
-  :[])
-)
-
-
-(SList ((SSym "data") : (SList ((SList ((SSym "Bool"):(SSym "True") :[]) ) :[]) ) : (SNum 2) :[]) )
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
---
--- eval : -
--- Input : -
--- Result : -
+-- minihaskell
+-- Input : (data ((Int A B)) A)
+-- Result : "Type 'Int' is already defined."
 ---------------------------------------------------------------
 -- Int ne peut pas être redéfini
 ((data ((Int A B)) A)
  Erreur)
 
+
 ---------------------------------------------------------------
--- typeCheck : -
--- Input : -
--- Result : -
---
--- eval : -
--- Input : -
--- Result : -
+-- minihaskell : DONE
+-- Input : (data ((Bool True False)) (let ((x Bool True)) (data ((Wrong A B)) 5)))
+-- Result : "sexp2Exp :: 'data' must be declared at top level."
 ---------------------------------------------------------------
 -- Data doit être une déclaration top level
 ((data ((Bool True False))
    (let ((x Bool True))
      (data ((Wrong A B)) 5)))
   Erreur)
+
+
+   .......
+  ?????????.
+ ???     ????.
+???       ????
+ ??       ????
+  *      ???
+        ??/
+       ???
+
+       ???
+       ???
+
+????????????
 
 ---------------------------------------------------------------
 -- typeCheck : -

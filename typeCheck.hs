@@ -73,11 +73,10 @@ typeCheck env (ELet lenv body) = do
         buildEnv env [] = env
         buildEnv env ((s,t,_):xs) = buildEnv ((s,t):env) xs
 
-
--- TO DO  ( REWORK )
-{-typeCheck env (ELet sym t v e) = do
-  env' <- addToTenv (sym, t) env
-  r <- typeCheck env' e -- If an error occurs, it will occur here.
-  case e of 
-    ELet _ _ _ _-> Right $ TArrow t r
-    otherwise -> Right $ TArrow t TInt -- We know that in all cases, a lambda will return a Int. -}
+typeCheck env (EData types e) = do
+  t <- typeCheck (buildEnv env types) e
+  return t
+  where buildEnv :: Tenv -> [Value] -> Tenv
+        buildEnv env [] = env
+        buildEnv env ((VData (TData sym) _):xs) = 
+          buildEnv ((sym, (TData sym)):env) xs

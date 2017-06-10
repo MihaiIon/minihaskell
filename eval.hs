@@ -34,6 +34,8 @@ eval env (ELam sym _ e) = (VLam sym e env)
 eval env (ELet lenv body) = 
   let env' = (map (\(var, _, e) -> (var, (eval env' e))) lenv) ++ env
   in eval env' body 
+
+eval env (EData types e) = VInt 2
   
 --eval env (ELet sym t val e) = 
 -- let r = eval env val
