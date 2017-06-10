@@ -44,6 +44,7 @@ addToLetEnv _ _ = Left $ error "addToLetEnv :: 'arg' or 'env' are malformed."
 ---------------------------------------------------------------------------
 sexp2type :: Sexp -> Either Error Type
 sexp2type (SSym "Int") = Right TInt
+sexp2type (SSym sym) = Right $ TData sym
 sexp2type (SList (x : xs)) = do
   type1 <- sexp2type x
   type2 <- sexp2type (SList xs)
@@ -59,6 +60,33 @@ sexp2Exp (SSym ident) | ident `elem` reservedKeywords
   = Left $ ident ++ " is a reserved keyword"
 sexp2Exp (SSym ident) = Right $ EVar ident
 
+
+-- Data
+--------------------------------------------
+sexp2Exp (SList ((SSym "data") : types : body : [])) = do
+  case types of
+    (SList []) -> return $ error "sexp2Exp :: 'data' is missing types."
+    otherwise -> do
+      env <- buildEnv [] types
+      body' <- sexp2Exp body
+      return $ EData env body'
+      where buildEnv :: [Value] -> Sexp ->  Either Error [Value]
+            buildEnv env (SList []) = Right env
+            buildEnv env (SList ((SList ((SSym name) : values)) : xs)) = do
+              case values of
+                [] -> return $ error "sexp2Exp :: 'data' type is missing possible values."
+                otherwise -> do
+                  list <- buildList [] values
+                  env' <- ((VData (TData name) list) : env)
+                  fenv <- buildEnv env' (SList xs)
+                  return fenv 
+                  where buildList :: [Value] -> [Sexp] -> Either Error [Value]
+                        buildList env [] = Right env
+                        buildList env ((SSym v):vs) = do
+                          env' <- ((VSym v):env)
+                          fenv <- buildList env' vs
+                          return fenv
+            buildEnv _ _ = Left $ error "sexp2Exp :: 'data' arguments are malformed."
 
 -- LET
 --------------------------------------------
@@ -97,13 +125,9 @@ sexp2Exp (SList ((SSym "lambda") :
 -- If there are multiple arguments, split the arguments and
 -- create sub lambda expressions with each one argument.
 sexp2Exp (SList ((SSym s) : (SList (x:xs)) : body : [])) | s <- "lambda" =
-  let body' = SList ((SSym s) :
-                      (SList xs) :
-                      body : [])
+  let body' = SList ((SSym s) : (SList xs) : body : [])
   in do 
-    r <- sexp2Exp (SList ((SSym s) : 
-                          (SList (x:[])) :
-                          body' : []))
+    r <- sexp2Exp (SList ((SSym s) : (SList (x:[])) : body' : []))
     return r
 
 -- ERROR.
@@ -126,48 +150,3 @@ sexp2Exp (SList (func : x : xs)) = do
   return $ EApp r1 r2
   
 sexp2Exp _ = Left "Syntax Error : Ill formed Sexp"
-
-
-{-
--- LET
---------------------------------------------
-sexp2Exp (SList ((SSym "let") : 
-                 (SList ((SList ((SSym var ) : t : v : [])) : [])) :
-                 body :
-                 [])) = do
-  body' <- sexp2Exp body
-  t' <- sexp2type t
-  v' <- sexp2Exp v
-  return $ ELet var t' v' body'
-
-
--- LAMBDA
---------------------------------------------
-sexp2Exp (SList ((SSym "lambda") :
-                 (SList ((SList ((SSym var) : t : [])) : [])) :
-                 body :
-                 [])) = do
-  body' <- sexp2Exp body
-  t' <- sexp2type t
-  return $ ELam var t' body'
-
-
--- General
---------------------------------------------
--- If there are multiple arguments, split the arguments and
--- create sub lambda expressions with each one argument.
-sexp2Exp (SList ((SSym s) : (SList (x:xs)) : body : [])) | s `elem` ["lambda", "let"] =
-  let body' = SList ((SSym s) :
-                      (SList xs) :
-                      body : [])
-  in do 
-    r <- sexp2Exp (SList ((SSym s) : 
-                          (SList (x:[])) :
-                          body' : []))
-    return r
-
--- ERROR.
-sexp2Exp (SList ((SSym s) : (SList []) : _ : [])) | s `elem` ["lambda", "let"] = 
-  Left "Syntax Error : No parameter"
-
--}

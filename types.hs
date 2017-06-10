@@ -27,16 +27,24 @@ data Exp = EInt Int
          | EVar Symbol
          | EApp Exp Exp
          | ELam Symbol Type Exp
-         | ELet LetEnv Exp -- Let - [(Var - Type - ValueVar)] - Body
+         | ELet LetEnv Exp -- Let - [(Symbol, Type, Exp)] - Body
+         | EData [Value] Exp
          deriving (Eq,Show)
 
 data Value = VInt Int
            | VLam Symbol Exp Env
            | VPrim (Value -> Value)
            | VData Type [Value] -- ex : Bool [True, False]
+           | VSym Symbol
 
 instance Show Value where
   show (VInt n) = show n
+  show (VSym sym) = sym
+  show (VData t vs) = 
+    (show t) ++ " " ++ (show' vs)
+    where show' :: [Value] -> String
+          show' (x:[]) = show x
+          show' (x:xs) = (show x) ++ (show' xs)
   show _ = "<function>"
 
 instance Eq Value where

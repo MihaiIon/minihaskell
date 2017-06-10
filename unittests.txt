@@ -190,7 +190,7 @@
 -- Result : -
 --
 -- eval : -
--- Input : -
+-- Input : (data ((Bool True False)) (let ((x Bool True)) x))
 -- Result : -
 ---------------------------------------------------------------
 -- data
@@ -198,6 +198,30 @@
    (let ((x Bool True)) x))
  (data ((Bool True False)) True)) 
 
+-- 
+(SList 
+  (
+    (SSym "data") : 
+    (SList 
+      (
+
+
+        (SList 
+          (
+            (SSym "Bool"):
+            (SSym "True")
+          :[])
+        ) 
+
+
+      :[])
+    )      
+    (SNum 2)
+  :[])
+)
+
+
+(SList ((SSym "data") : (SList ((SList ((SSym "Bool"):(SSym "True") :[]) ) :[]) ) : (SNum 2) :[]) )
 ---------------------------------------------------------------
 -- typeCheck : -
 -- Input : -
