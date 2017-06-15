@@ -34,12 +34,19 @@ data Exp = EInt Int
 data Value = VInt Int
            | VLam Symbol Exp Env
            | VPrim (Value -> Value)
-           | VData Type [Value] -- ex : Bool [True, False]
-           | VSym Symbol
+           | VData Type [Value] -- VData (Type) [VCons|VSym]
+           | VCons Symbol [Value] -- VCons Symbol [VSym]
+           | VSym Symbol -- Data values, ex : True, False
 
 instance Show Value where
   show (VInt n) = show n
   show (VSym sym) = sym
+  show (VCons sym vs) = 
+    sym ++ "(" ++ (show' vs) ++ ")"
+    where show' :: [Value] -> String
+          show' (x:[]) = show x
+          show' (x:xs) = (show x) ++ " " ++ (show' xs)
+
   show (VData t vs) = 
     (show t) ++ " " ++ (show' vs)
     where show' :: [Value] -> String

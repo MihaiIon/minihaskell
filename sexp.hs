@@ -67,25 +67,38 @@ sexp2Exp (SList ((SSym "data") : types : body : [])) = do
   case types of
     (SList []) -> return $ error "sexp2Exp :: 'data' is missing types."
     otherwise -> do
-      env <- buildEnv [] types
+      env <- buildTypeEnv [] types
       body' <- sexp2Exp body
       return $ EData env body' 
-      where buildEnv :: [Value] -> Sexp ->  Either Error [Value]
-            buildEnv env (SList []) = Right env
-            buildEnv env (SList ((SList ((SSym sym) : values)) : xs)) = do
+
+      -- Builds each TYPE, one by one.
+      where buildTypeEnv :: [Value] -> Sexp ->  Either Error [Value]
+            buildTypeEnv env (SList []) = Right env
+            buildTypeEnv env (SList ((SList ((SSym sym) : values)) : xs)) = do
               case values of
                 [] -> return $ error "sexp2Exp :: 'data' type is missing possible values."
                 otherwise ->
                   if (isInEnv sym env)
                     then return $ error $ "Type '" ++ sym ++ "' is already defined."
                     else do 
-                      fenv <- buildEnv ((VData (TData sym) (buildList [] values)) : env) (SList xs)
+
+                      -- Proceed to next TYPE.
+                      fenv <- buildTypeEnv ((VData (TData sym) (buildValues [] values)) : env) (SList xs)
                       return fenv 
-                      where buildList :: [Value] -> [Sexp] -> [Value]
-                            buildList env [] = env
-                            buildList env ((SSym v):vs) = do
-                              fenv <- buildList ((VSym v):env) vs
+
+                      -- Builds each values for the current TYPE.
+                      where buildValues :: [Value] -> [Sexp] -> [Value]
+                            buildValues env [] = env
+                            buildValues env ((SSym v):vs) = do
+                              fenv <- buildValues ((VSym v):env) vs
                               return fenv
+
+                            -- If the next value is a constructor with multiple param.
+                            buildValues env ((SList ((SSym cname:xs))):vs) = do
+                              fenv <- buildValues ((VCons cname (buildValues [] xs)):env) vs
+                              return $ fenv
+
+                      -- Checks if value is already defined.
                       where isInEnv :: Symbol -> [Value] -> Bool
                             isInEnv sym [] = if sym == "Int" then True else False
                             isInEnv sym ((VData (TData s) _ ):xs) = if sym == s then True else (isInEnv sym xs)

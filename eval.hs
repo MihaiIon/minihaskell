@@ -32,10 +32,13 @@ eval env (EApp e1 e2) =
 eval env (ELam sym _ e) = (VLam sym e env)
 
 eval env (ELet lenv body) = 
-  let env' = (map (\(var, _, e) -> (var ,(eval env' e))) lenv) ++ env
+  let f = \(sym, _, e) -> (sym ,(eval env' e)) -- Create env tuple.
+      env' = (map f lenv) ++ env
   in eval env' body
 
-eval env (EData types e) = VInt 2
---eval env (ELet sym t val e) = 
--- let r = eval env val
---  in eval ((sym,r):env) e
+eval env (EData types e) = 
+  let f = \v -> 
+        case v of
+          VData (TData sym) v -> (sym, v)
+      env' = (map f types) ++ env
+  in eval env' e
