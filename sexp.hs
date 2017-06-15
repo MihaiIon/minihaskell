@@ -104,6 +104,33 @@ sexp2Exp (SList ((SSym "data") : types : body : [])) = do
                             isInEnv sym ((VData (TData s) _ ):xs) = if sym == s then True else (isInEnv sym xs)
             buildEnv _ _ = Left $ error "sexp2Exp :: 'data' arguments are malformed."
 
+-- Case
+--------------------------------------------
+sexp2Exp (SList ((SSym "case") : (SSym sym) : cases : [])) = do
+  case cases of 
+    (SList []) -> return $ error "sexp2Exp :: 'case' is missing cases."
+    otherwise -> do 
+      env <- buildEnv [] cases
+      return $ ECase (TData sym) env
+
+    -- 
+    where buildEnv :: CaseEnv -> Sexp -> Either Error CaseEnv
+          buildEnv env (SList []) = Right env
+          buildEnv env (SList ((SList ((SSym s) : body : [])) : xs)) = do
+            body'<- sexp2Exp body
+            env' <- addToEnv s body' env
+            fenv <- buildEnv env' (SList xs)
+            return fenv
+            where addToEnv :: Symbol -> Exp -> CaseEnv -> Either Error CaseEnv
+                  addToEnv sym body env = 
+                    if (isInEnv sym env)
+                      then Left $ error "sexp2Exp :: '" ++ sym ++ "' is already defined in 'case'."
+                      else Right (((VSym sym), body):env)
+                    where isInEnv :: Symbol -> CaseEnv -> Bool
+                          isInEnv _ [] = False
+                          isInEnv sym (((VSym s),_):xs) = 
+                            if sym == s then True else (isInEnv sym xs)
+
 -- LET
 --------------------------------------------
 sexp2Exp (SList ((SSym "let") : args : body : [])) = do

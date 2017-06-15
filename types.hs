@@ -22,6 +22,7 @@ instance Show Type where
 ---------------------------------------------------------------------------
 
 type LetEnv = [(Symbol, Type, Exp)]
+type CaseEnv = [(Value,Exp)]
 
 data Exp = EInt Int
          | EVar Symbol
@@ -29,6 +30,7 @@ data Exp = EInt Int
          | ELam Symbol Type Exp
          | ELet LetEnv Exp -- Let - [(Symbol, Type, Exp)] - Body
          | EData [Value] Exp
+         | ECase Type CaseEnv -- Type [({VCons|VSym}, Exp)]
          deriving (Eq,Show)
 
 data Value = VInt Int
