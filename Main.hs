@@ -13,11 +13,9 @@ import System.Console.Haskeline
 import Text.ParserCombinators.Parsec
 import Control.Arrow
 
-import Parseur
-import Types
-import Sexp
-import TypeCheck
+
 import Eval
+import Parseur
 
 
 mapLeft :: (a -> b) -> Either a c -> Either b c
