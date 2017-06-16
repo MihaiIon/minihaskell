@@ -24,34 +24,28 @@ instance Show Type where
 type LetEnv = [(Symbol, Type, Exp)]
 type CaseEnv = [(Value,Exp)]
 
+type Cons = (Symbol, [Type])
+type Decl = (Symbol, [Cons])
+
 data Exp = EInt Int
          | EVar Symbol
          | EApp Exp Exp
          | ELam Symbol Type Exp
          | ELet LetEnv Exp -- Let - [(Symbol, Type, Exp)] - Body
-         | EData [Value] Exp
+         | EData [Decl] Exp
          | ECase Type CaseEnv -- Type [({VCons|VSym}, Exp)]
          deriving (Eq,Show)
 
 data Value = VInt Int
            | VLam Symbol Exp Env
            | VPrim (Value -> Value)
-           | VData Type [Value] -- VData (Type) [VCons|VSym]
-           | VCons Symbol [Value] -- VCons Symbol [VSym]
-           | VSym Symbol -- Data values, ex : True, False
+           | VCons Symbol [Type] -- VCons Symbol [VSym]
 
 instance Show Value where
   show (VInt n) = show n
-  show (VSym sym) = sym
   show (VCons sym vs) = 
     sym ++ "(" ++ (show' vs) ++ ")"
-    where show' :: [Value] -> String
-          show' (x:[]) = show x
-          show' (x:xs) = (show x) ++ " " ++ (show' xs)
-
-  show (VData t vs) = 
-    (show t) ++ " " ++ (show' vs)
-    where show' :: [Value] -> String
+    where show' :: [Type] -> String
           show' (x:[]) = show x
           show' (x:xs) = (show x) ++ " " ++ (show' xs)
   show _ = "<function>"

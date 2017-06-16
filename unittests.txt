@@ -244,44 +244,26 @@
 -- Result : -
 ---------------------------------------------------------------
 (data ((Bool True False) (ListInt Nil (Cons Int ListInt))) (let ((x Bool True)) (data ((Wrong A B)) 5)))
-((data ((Bool True False) (ListInt Nil (Cons Int ListInt))) ((let ((x Int y) (y Int 7)) (+ x y))))
+((data ((Bool True False) (ListInt Nil (Cons Int ListInt))) (let ((x Int y) (y Int 7)) (+ x y)))
   (data ((Bool True False)) False))
 
 
 
 
 
-(SList (
-
-  (SSym "data")
-  :(SList (
-
-    (SList (
-      (SSym "Bool")
-      :(SSym "True")
-      :(SSym "False")
-      :[])
-    )
-    :(SList (
-      (SSym "ListInt")
-      :(SSym "Nil")
-      :(SList (
-        (SSym "Cons")
-        :(SSym "Int")
-        :(SSym "ListInt")
-        :[])
-      )
-      :[])
-    )
-    :[])
-  )
-  :(SList ((SSym "let") : (SList ((SList ((SSym "y") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SSym "y") : [])) : [])) :  (SSym "x") : []))
-  :[])
-)
-
+(SList ((SSym "data") :(SList ((SList ((SSym "Bool") :(SSym "True") :(SSym "False") :[]) ) :(SList ((SSym "ListInt") :(SSym "Nil") :(SList ((SSym "Cons") :(SSym "Int") :(SSym "ListInt") :[]) ) :[]) ) :[] ) :(SList ((SSym "let") : (SList ((SList ((SSym "y") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SSym "y") : [])) : [])) :  (SSym "x") : [])) :[]) )
 
 
 
 
 
 (SList ((SSym "let") : (SList ((SList ((SSym "y") : (SSym "Int") : (SNum 4) : [])) : (SList ((SSym "x") : (SSym "Int") : (SSym "y") : [])) : [])) :  (SSym "x") : []))
+
+
+
+Right (
+
+EData [
+  ("ListInt",[("Cons",[Int,ListInt]),("Nil",[])]),
+  ("Bool",[("False",[]),("True",[])])] 
+  (ELet [("x",Int,EVar "y"),("y",Int,EInt 4)] (EVar "x")))

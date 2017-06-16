@@ -55,7 +55,7 @@ typeCheck env (EApp e1 e2) = do
     TArrow a b -> 
       if a == r2 
         then return b 
-        else return $ error $ "TypeCheck :: Error in EApp, 2nd case." 
+        else return $ error $ "TypeCheck :: '"++ (show r2) ++"' type is undefined." 
     t -> return t
 
 typeCheck env (ELam sym t body) = do
@@ -73,10 +73,16 @@ typeCheck env (ELet lenv body) = do
         buildEnv env [] = env
         buildEnv env ((s,t,_):xs) = buildEnv ((s,t):env) xs
 
-typeCheck env (EData types e) = do
-  t <- typeCheck (buildEnv env types) e
+typeCheck env (EData ds e) = do
+  t <- typeCheck (buildEnv env ds) e
   return t
-  where buildEnv :: Tenv -> [Value] -> Tenv
+  where buildEnv :: Tenv -> [Decl] -> Tenv
         buildEnv env [] = env
-        buildEnv env ((VData (TData sym) _):xs) = 
-          buildEnv ((sym, (TData sym)):env) xs
+        buildEnv env ((sym, cons):cs) = 
+          let f = \(s, l) -> (s, (TData sym))
+          in buildEnv ((map f cons)++env) cs
+
+
+
+
+

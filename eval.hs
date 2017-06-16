@@ -36,9 +36,8 @@ eval env (ELet lenv body) =
       env' = (map f lenv) ++ env
   in eval env' body
 
-eval env (EData types e) = VInt 2
-{-  let f = \v -> 
-        case v of
-          VData (TData sym) v -> (sym, v)
-      env' = (map f types) ++ env
-  in eval env' e-}
+eval env (EData ds body) = 
+  let f  = \(sym, ts) -> (sym, (VCons sym ts)) 
+      f' = \l (_, cons) -> (map f cons) ++ l
+      env' = (foldl f' [] ds) ++ env
+  in eval env' body

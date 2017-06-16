@@ -63,50 +63,50 @@ sexp2Exp (SSym ident) = Right $ EVar ident
 
 -- Data
 --------------------------------------------
-sexp2Exp (SList ((SSym "data") : types : body : [])) = do
-  case types of
-    (SList []) -> return $ error "sexp2Exp :: 'data' is missing types."
+sexp2Exp (SList ((SSym "data") : decls : body : [])) = do
+  case decls of
+    (SList []) -> do 
+      body' <- sexp2Exp body
+      return $ body'
     otherwise -> do
-      env <- buildTypeEnv [] types
+      env <- buildDeclEnv [] decls
       body' <- sexp2Exp body
       return $ EData env body' 
 
       -- Builds each TYPE, one by one.
-      where buildTypeEnv :: [Value] -> Sexp ->  Either Error [Value]
-            buildTypeEnv env (SList []) = Right env
-            buildTypeEnv env (SList ((SList ((SSym sym) : values)) : xs)) = do
-              case values of
-                [] -> return $ error "sexp2Exp :: 'data' type is missing possible values."
-                otherwise ->
-                  if (isInEnv sym env)
-                    then return $ error $ "Type '" ++ sym ++ "' is already defined."
-                    else do 
+      where buildDeclEnv :: [Decl] -> Sexp ->  Either Error [Decl]
+            buildDeclEnv env (SList []) = Right env
+            buildDeclEnv env (SList ((SList ((SSym sym) : cons)) : ds)) = do
+              if (isInEnv sym env)
+                then return $ error $ "Data Type '" ++ sym ++ "' is already defined."
+                else do 
 
-                      -- Proceed to next TYPE.
-                      fenv <- buildTypeEnv ((VData (TData sym) (buildValues [] values)) : env) (SList xs)
-                      return fenv 
+                  -- Proceed to next constructor.
+                  cs <- buildCons [] cons
+                  fenv <- buildDeclEnv ((sym, cs) : env) (SList ds)
+                  return fenv 
 
-                      -- Builds each values for the current TYPE.
-                      where buildValues :: [Value] -> [Sexp] -> [Value]
-                            buildValues env [] = env
-                            buildValues env ((SSym v):vs) = do
-                              fenv <- buildValues ((VSym v):env) vs
-                              return fenv
+                  -- Builds each Constructors for the current DATA TYPE.
+                  where buildCons :: [Cons] -> [Sexp] -> Either Error [Cons]
+                        buildCons env [] = Right env
+                        buildCons env ((SSym cname):cs) = do
+                          fenv <- buildCons ((cname, []):env) cs
+                          return $ fenv
 
-                            -- If the next value is a constructor with multiple param.
-                            buildValues env ((SList ((SSym cname:xs))):vs) = do
-                              fenv <- buildValues ((VCons cname (buildValues [] xs)):env) vs
-                              return $ fenv
+                        -- If the next value is a constructor with multiple param.
+                        buildCons env ((SList ((SSym cname:ts))):cs) = do
+                          types <- sequence (map sexp2type ts)
+                          fenv <- buildCons ((cname, types):env) cs
+                          return $ fenv
 
-                      -- Checks if value is already defined.
-                      where isInEnv :: Symbol -> [Value] -> Bool
-                            isInEnv sym [] = if sym == "Int" then True else False
-                            isInEnv sym ((VData (TData s) _ ):xs) = if sym == s then True else (isInEnv sym xs)
-            buildEnv _ _ = Left $ error "sexp2Exp :: 'data' arguments are malformed."
+                        -- Checks if value is already defined.
+                        isInEnv :: Symbol -> [Decl] -> Bool
+                        isInEnv sym [] = if sym == "Int" then True else False
+                        isInEnv sym ((s, _):xs) = if sym == s then True else (isInEnv sym xs)
 
 -- Case
 --------------------------------------------
-sexp2Exp (SList ((SSym "case") : (SSym sym) : cases : [])) = do
+{-sexp2Exp (SList ((SSym "case") : (SSym sym) : cases : [])) = do
   case cases of 
     (SList []) -> return $ error "sexp2Exp :: 'case' is missing cases."
     otherwise -> do 
@@ -127,9 +127,7 @@ sexp2Exp (SList ((SSym "case") : (SSym sym) : cases : [])) = do
                       then Left $ error "sexp2Exp :: '" ++ sym ++ "' is already defined in 'case'."
                       else Right (((VSym sym), body):env)
                     where isInEnv :: Symbol -> CaseEnv -> Bool
-                          isInEnv _ [] = False
-                          isInEnv sym (((VSym s),_):xs) = 
-                            if sym == s then True else (isInEnv sym xs)
+                          isInEnv _ [] = False-}
 
 -- LET
 --------------------------------------------
@@ -149,7 +147,8 @@ sexp2Exp (SList ((SSym "let") : args : body : [])) = do
               fenv <- buildEnv env' (SList xs)
               return fenv
             buildEnv _ _ = Left $ error "sexp2Exp :: 'let' arguments are malformed."
-      where isDataInBody :: Exp -> Bool
+            
+            isDataInBody :: Exp -> Bool
             isDataInBody (EData _ _) = True
             isDataInBody (ELam _ _ body) = isDataInBody body
             isDataInBody (ELet _ body) = isDataInBody body
